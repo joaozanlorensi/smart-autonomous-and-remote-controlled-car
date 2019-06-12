@@ -11,6 +11,12 @@ Motor::Motor(short leftMotorPin, short rightMotorPin): rightMotor(rightMotorPin)
 
 }
 
+Motor::Motor(short leftMotorPin, short rightMotorPin, float leftMultiplier, float rightMultiplier): 
+             rightMotor(rightMotorPin), leftMotor(leftMotorPin), 
+             leftMultiplier(leftMultiplier), rightMultiplier(rightMultiplier){
+
+}
+
 /**
  * @param speed - short from -100 to 100
  * @param direction -  short from -100 to 100
@@ -28,8 +34,8 @@ void Motor::setMovement(short speed, short direction) //
     int16_t right = (v - w) / 2;
 
     // maps each value on the motor's scale
-    left = map(left, -100, 100, -255, 255);
-    right = map(right, -100, 100, -255, 255);
+    left = leftMultiplier * map(left, -100, 100, -255, 255);
+    right = rightMultiplier * map(right, -100, 100, -255, 255);
     
     // sets the motors' direction
     if(right > 0)

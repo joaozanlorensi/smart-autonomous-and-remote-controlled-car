@@ -10,49 +10,59 @@
  */
 
 #include "Motor.h"
-#include <SoftwareSerial.h>
+#include "Bluetooth.h"
+#include "IR.h"
+
+#define LEFT_MULTIPLIER 0.9
+#define RIGHT_MULTIPLIER 1
+#define LEFT_MOTOR_PIN 4
+#define RIGHT_MOTOR_PIN 3
+#define IR_PIN A2
+#define BLUETOOTH_RX A0 
+#define BLUETOOTH_TX A1
+
 
 // initial speed and rotation
 short initialSpeed = 0, initialDirection = 0;
  
-Motor motor(3, 4);
-SoftwareSerial BTSerial(A0, A1);
-
-String inputString;
-char junk;
+Motor motor(LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN, LEFT_MULTIPLIER, RIGHT_MULTIPLIER);
+Bluetooth bluetooth(BLUETOOTH_RX, BLUETOOTH_TX);
+IR ir(IR_PIN);
 
 void setup()
 {
     Serial.begin(9600); 
-    BTSerial.begin(9600);
+    bluetooth.begin(9600);
     motor.setMovement(initialSpeed, initialDirection);
 }
  
 void loop()
 {
-    readBluetooth();
+    if(ir.didReadingChange()){
+        motor.setMovement(0,0);
+    }
+    if(!ir.isBlack()){
+        remoteControl();
+    } 
     return;
 }
 
-void readBluetooth()
+void remoteControl()
 {
-    if(BTSerial.available()){
-        while(BTSerial.available()){
-            char inChar = (char)BTSerial.read(); //read the input
-            inputString += inChar;        //make a string of the characters coming on serial
-        }
-        Serial.println(inputString);
-        while (BTSerial.available() > 0){
-            junk = BTSerial.read() ; // Clear the buffer
-        }     
-
-        if(inputString == "a"){         //in case of 'a' turn the LED on
-            digitalWrite(13, HIGH);  
+    String inputString = bluetooth.read();
+        if(inputString == "u"){        //In case of 'u', go forward
             motor.setMovement(100, 0);
         } 
-        else if(inputString == "b"){   //incase of 'b' turn the LED off
-            digitalWrite(13, LOW);
+        else if(inputString == "d"){   //In case of 'd', go backwards
+            motor.setMovement(-100, 0);
+        }
+        else if(inputString == "l"){   // In case of 'l', spin left
+            motor.setMovement(0, 100);
+        }
+        else if(inputString == "r"){   // In case 'r', spin right
+            motor.setMovement(0, -100);
+        }
+        else if (inputString == "0"){ // In case '0', stop
             motor.setMovement(0, 0);
         }
-  }
 }
