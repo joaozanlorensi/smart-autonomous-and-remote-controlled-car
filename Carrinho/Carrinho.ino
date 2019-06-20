@@ -14,8 +14,8 @@
 #include "IR.h"
 #include "Ultrasonic.h"
 
-#define LEFT_MOTOR_PIN 4
-#define RIGHT_MOTOR_PIN 3
+#define LEFT_MOTOR_NUMBER 4
+#define RIGHT_MOTOR_NUMBER 3
 #define LEFT_MULTIPLIER 0.9
 #define RIGHT_MULTIPLIER 1
 
@@ -42,7 +42,7 @@ short step = STEP_NULL;
 // initial speed and rotation
 short initialSpeed = 0, initialDirection = 0;
  
-Motor motor(LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN, LEFT_MULTIPLIER, RIGHT_MULTIPLIER);
+Motor motor(LEFT_MOTOR_NUMBER, RIGHT_MOTOR_NUMBER, LEFT_MULTIPLIER, RIGHT_MULTIPLIER);
 Bluetooth bluetooth(BLUETOOTH_RX, BLUETOOTH_TX);
 IR ir(IR_PIN);
 Ultrasonic ultrasonic(TRIG_PIN, ECHO_PIN);

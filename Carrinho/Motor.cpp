@@ -7,14 +7,13 @@ long map(long x, long in_min, long in_max, long out_min, long out_max)
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-Motor::Motor(short leftMotorPin, short rightMotorPin): rightMotor(rightMotorPin), leftMotor(leftMotorPin){
-
+Motor::Motor(short leftMotorNumber, short rightMotorNumber):
+    leftMotor(leftMotorNumber), rightMotor(rightMotorNumber){
 }
 
-Motor::Motor(short leftMotorPin, short rightMotorPin, float leftMultiplier, float rightMultiplier): 
-             rightMotor(rightMotorPin), leftMotor(leftMotorPin), 
-             leftMultiplier(leftMultiplier), rightMultiplier(rightMultiplier){
-
+Motor::Motor(short leftMotorNumber, short rightMotorNumber, float leftMultiplier, float rightMultiplier): 
+    leftMotor(leftMotorNumber), rightMotor(rightMotorNumber), 
+    leftMultiplier(leftMultiplier), rightMultiplier(rightMultiplier){
 }
 
 /**

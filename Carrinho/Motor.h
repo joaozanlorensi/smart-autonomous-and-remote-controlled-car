@@ -10,8 +10,8 @@ class Motor{
     float rightMultiplier;
 
     public:
-        Motor(short leftMotorPin, short rightMotorPin);
-        Motor(short leftMotorPin, short rightMotorPin, float leftMultiplier, float rightMultiplier);
+        Motor(short leftMotorNumber, short rightMotorNumber);
+        Motor(short leftMotorNumber, short rightMotorNumber, float leftMultiplier, float rightMultiplier);
         void setMovement(short speed, short direction);
         short getCurrentSpeed(){
             return currentSpeed;
