@@ -13,6 +13,7 @@
 #include "Bluetooth.h"
 #include "IR.h"
 #include "Ultrasonic.h"
+#include "RFID.h"
 
 #define LEFT_MOTOR_NUMBER 4
 #define RIGHT_MOTOR_NUMBER 3
@@ -27,6 +28,9 @@
 #define TRIG_PIN A3
 #define ECHO_PIN A4
 
+#define RFID_RST_PIN 9
+#define RFID_SS_PIN 10
+
 #define MODE_MANUAL         0
 #define MODE_AUTONOMOUS     1
 
@@ -39,18 +43,19 @@
 short mode = MODE_MANUAL;
 short step = STEP_NULL;
 
-// initial speed and rotation
 short initialSpeed = 0, initialDirection = 0;
  
 Motor motor(LEFT_MOTOR_NUMBER, RIGHT_MOTOR_NUMBER, LEFT_MULTIPLIER, RIGHT_MULTIPLIER);
 Bluetooth bluetooth(BLUETOOTH_RX, BLUETOOTH_TX);
 IR ir(IR_PIN);
 Ultrasonic ultrasonic(TRIG_PIN, ECHO_PIN);
+RFID rfid(RFID_SS_PIN, RFID_RST_PIN);
 
 void setup()
 {
     Serial.begin(9600); 
     bluetooth.begin(9600);
+    rfid.begin();
     motor.setMovement(initialSpeed, initialDirection);
 }
  
@@ -67,6 +72,12 @@ void loop()
     if (ir.isWhite()) {
         mode = MODE_MANUAL;
         remoteControl();
+        
+        String tagUID = rfid.getUIDFromTag();
+        if(tagUID != ""){
+            Serial.print("UID:");
+            Serial.println(tagUID);
+        }
     } else {
         mode = MODE_AUTONOMOUS;
         step = autonomousControl(step);
