@@ -72,12 +72,6 @@ void loop()
     if (ir.isWhite()) {
         mode = MODE_MANUAL;
         remoteControl();
-        
-        String tagUID = rfid.getUIDFromTag();
-        if(tagUID != ""){
-            Serial.print("UID:");
-            Serial.println(tagUID);
-        }
     } else {
         mode = MODE_AUTONOMOUS;
         step = autonomousControl(step);
@@ -117,7 +111,7 @@ short autonomousControl(short curretStep) {
         float distance = ultrasonic.getDistance();
         if (distance > 100) {
             // Nothing on sight
-            motor.setMovement(0, 60);
+            motor.setMovement(0, 100);
             return STEP_SEARCH_TARGET;
         } else {
             // Look! Straight ahead!
@@ -138,17 +132,20 @@ short autonomousControl(short curretStep) {
             return STEP_SEARCH_TARGET;
         } else {
             // On my way!
-            motor.setMovement(60, 0);
+            motor.setMovement(100, 0);
             return STEP_GOTO_TARGET;
         }
     }
     if (curretStep == STEP_READ_RFID) {
-        // TODO: Read RFID
-        return STEP_LEAVE_ZONE; // FIXME:
+        String tagUID = rfid.getUIDFromTag();
+        if(tagUID != "")
+            return STEP_LEAVE_ZONE;
+        else
+            return STEP_READ_RFID;        
     }
     if (curretStep == STEP_LEAVE_ZONE) {
         // Just keep rolling back
-        motor.setMovement(-60, 0);
+        motor.setMovement(-100, 0);
         return STEP_LEAVE_ZONE;
     }
 
