@@ -137,7 +137,7 @@ short autonomousControl(short curretStep) {
         }
     }
     if (curretStep == STEP_READ_RFID) {
-        String tagUID = rfid.getUIDFromTag();
+        String tagUID = rfid.readUIDFromTag();
         if(tagUID != "")
             return STEP_LEAVE_ZONE;
         else

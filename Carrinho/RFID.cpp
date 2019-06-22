@@ -9,7 +9,7 @@ void RFID::begin(){
     delay(5);
 }
 
-String RFID::getUIDFromTag(){
+String RFID::readUIDFromTag(){
 	if ( ! mfrc522.PICC_IsNewCardPresent()) 
 		return "";
 

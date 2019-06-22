@@ -10,5 +10,5 @@ class RFID {
         RFID(short ssPin, short rstPin);
         void begin();
         void dumpDataToSerial();
-        String getUIDFromTag();
+        String readUIDFromTag();
 };
