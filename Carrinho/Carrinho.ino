@@ -39,7 +39,11 @@
 #define STEP_GOTO_TARGET 2
 #define STEP_READ_RFID 3
 #define STEP_RETRY_RFID_BACKWARDS 4
-#define STEP_LEAVE_ZONE 5
+#define STEP_RETRY_RFID_SWIVEL 5
+#define STEP_LEAVE_ZONE 6
+
+#define TURNING_RIGHT -1
+#define TURNING_LEFT 1
 
 #define MANUAL_SPEED 100
 #define MANUAL_TURNING_SPEED 80
@@ -50,12 +54,16 @@
 
 #define FAR_DISTANCE_THRESHOLD 50
 #define CLOSE_DISTANCE_THRESHOLD 5
+#define RFID_READ_TIMEOUT 500
+#define RFID_BACKWARDS_DURATION 800
+#define RFID_SWIVEL_DURATION 400
 
 short mode = MODE_MANUAL;
 
 typedef struct {
   short step;
-  int timeRef;
+  unsigned long timeRef;
+  short searchDirection;
 } AutonomousState;
 
 AutonomousState autonomousState;
@@ -77,6 +85,7 @@ void setup() {
 
   autonomousState.step = STEP_NULL;
   autonomousState.timeRef = millis();
+  autonomousState.searchDirection = TURNING_LEFT;
 }
 
 void loop() {
@@ -124,10 +133,12 @@ void remoteControl() {
  */
 AutonomousState autonomousControl(AutonomousState state) {
   short currentStep = state.step;
-  short timeRef = state.timeRef;
+  unsigned long timeRef = state.timeRef;
+  short searchDirection = state.searchDirection;
 
   short nextStep = STEP_NULL;
-  short nextTimeRef = timeRef;
+  unsigned long nextTimeRef = timeRef;
+  short nextSearchDirection = searchDirection;
 
   if (currentStep == STEP_NULL) {
     // Woops
@@ -137,7 +148,7 @@ AutonomousState autonomousControl(AutonomousState state) {
     float distance = ultrasonic.getDistance();
     if (distance > FAR_DISTANCE_THRESHOLD) {
       // Nothing on sight
-      motor.setMovement(0, AUTO_TURNING_SPEED);
+      motor.setMovement(0, searchDirection * AUTO_TURNING_SPEED);
       nextStep = STEP_SEARCH_TARGET;
     } else {
       // Look! Straight ahead!
@@ -151,6 +162,7 @@ AutonomousState autonomousControl(AutonomousState state) {
       // Found target! Yaaay!!
       motor.setMovement(0, 0);
       nextStep = STEP_READ_RFID;
+      nextTimeRef = millis();
     } else if (distance > FAR_DISTANCE_THRESHOLD) {
       // Lost target :(
       motor.setMovement(0, 0);
@@ -164,10 +176,33 @@ AutonomousState autonomousControl(AutonomousState state) {
   if (currentStep == STEP_READ_RFID) {
     String tagUID = rfid.readUIDFromTag();
     bool successfulReading = tagUID != "";
-    if (successfulReading)
+    if (successfulReading) {
       nextStep = STEP_LEAVE_ZONE;
-    else
-      nextStep = STEP_READ_RFID;
+    } else {
+      if ((millis() - timeRef) > RFID_READ_TIMEOUT) {
+        nextStep = STEP_RETRY_RFID_BACKWARDS;
+        nextTimeRef = millis();
+      } else {
+        nextStep = STEP_READ_RFID;
+      }
+    }
+  }
+  if (currentStep == STEP_RETRY_RFID_BACKWARDS) {
+    if ((millis() - timeRef) < RFID_BACKWARDS_DURATION) {
+      motor.setMovement(AUTO_BACKWARDS_SPEED, 0);
+      nextStep = STEP_RETRY_RFID_BACKWARDS;
+    } else {
+      nextStep = STEP_RETRY_RFID_SWIVEL;
+      nextTimeRef = millis();
+    }
+  }
+  if (currentStep == STEP_RETRY_RFID_SWIVEL) {
+    if ((millis() - timeRef) < RFID_SWIVEL_DURATION) {
+      motor.setMovement(0, -searchDirection * AUTO_TURNING_SPEED);
+      nextStep = STEP_RETRY_RFID_SWIVEL;
+    } else {
+      nextStep = STEP_SEARCH_TARGET;
+    }
   }
   if (currentStep == STEP_LEAVE_ZONE) {
     // Just keep rolling back
@@ -175,5 +210,7 @@ AutonomousState autonomousControl(AutonomousState state) {
     nextStep = STEP_LEAVE_ZONE;
   }
 
-  return (AutonomousState){.step = nextStep, .timeRef = nextTimeRef};
+  return (AutonomousState){.step = nextStep,
+                           .timeRef = nextTimeRef,
+                           .searchDirection = nextSearchDirection};
 }
