@@ -40,6 +40,16 @@
 #define STEP_READ_RFID 3
 #define STEP_LEAVE_ZONE 4
 
+#define MANUAL_SPEED 100
+#define MANUAL_TURNING_SPEED 80
+
+#define AUTO_SPEED 60
+#define AUTO_BACKWARDS_SPEED -80
+#define AUTO_TURNING_SPEED 70
+
+#define FAR_DISTANCE_THRESHOLD 50
+#define CLOSE_DISTANCE_THRESHOLD 5
+
 short mode = MODE_MANUAL;
 short step = STEP_NULL;
 
@@ -63,16 +73,16 @@ void loop() {
   if (ir.didReadingChange()) {
     motor.setMovement(0, 0);
     if (ir.isBlack()) {
+      mode = MODE_AUTONOMOUS;
       step = STEP_SEARCH_TARGET;
     } else {
+      mode = MODE_MANUAL;
       step = STEP_NULL;
     }
   }
-  if (ir.isWhite()) {
-    mode = MODE_MANUAL;
+  if (mode == MODE_MANUAL) {
     remoteControl();
-  } else {
-    mode = MODE_AUTONOMOUS;
+  } else if (mode == MODE_AUTONOMOUS) {
     step = autonomousControl(step);
   }
 }
@@ -82,16 +92,16 @@ void remoteControl() {
 
   if (inputString == "u") {
     // Go forward
-    motor.setMovement(100, 0);
+    motor.setMovement(MANUAL_SPEED, 0);
   } else if (inputString == "d") {
     // Go backwards
-    motor.setMovement(-100, 0);
+    motor.setMovement(-MANUAL_SPEED, 0);
   } else if (inputString == "l") {
     // Spin left
-    motor.setMovement(0, 100);
+    motor.setMovement(0, MANUAL_TURNING_SPEED);
   } else if (inputString == "r") {
     // Spin right
-    motor.setMovement(0, -100);
+    motor.setMovement(0, -MANUAL_TURNING_SPEED);
   } else if (inputString == "0") {
     // Stop
     motor.setMovement(0, 0);
@@ -102,16 +112,16 @@ void remoteControl() {
  * Receives the current step, runs the necessary action
  * and returns the next desired step
  */
-short autonomousControl(short curretStep) {
-  if (curretStep == STEP_NULL) {
+short autonomousControl(short currentStep) {
+  if (currentStep == STEP_NULL) {
     // Woops
     return STEP_NULL;
   }
-  if (curretStep == STEP_SEARCH_TARGET) {
+  if (currentStep == STEP_SEARCH_TARGET) {
     float distance = ultrasonic.getDistance();
-    if (distance > 100) {
+    if (distance > FAR_DISTANCE_THRESHOLD) {
       // Nothing on sight
-      motor.setMovement(0, 100);
+      motor.setMovement(0, AUTO_TURNING_SPEED);
       return STEP_SEARCH_TARGET;
     } else {
       // Look! Straight ahead!
@@ -119,32 +129,33 @@ short autonomousControl(short curretStep) {
       return STEP_GOTO_TARGET;
     }
   }
-  if (curretStep == STEP_GOTO_TARGET) {
+  if (currentStep == STEP_GOTO_TARGET) {
     float distance = ultrasonic.getDistance();
-    if (distance < 10) {
+    if (distance < CLOSE_DISTANCE_THRESHOLD) {
       // Found target! Yaaay!!
       motor.setMovement(0, 0);
       return STEP_READ_RFID;
-    } else if (distance > 100) {
+    } else if (distance > FAR_DISTANCE_THRESHOLD) {
       // Lost target :(
       motor.setMovement(0, 0);
       return STEP_SEARCH_TARGET;
     } else {
       // On my way!
-      motor.setMovement(100, 0);
+      motor.setMovement(AUTO_SPEED, 0);
       return STEP_GOTO_TARGET;
     }
   }
-  if (curretStep == STEP_READ_RFID) {
+  if (currentStep == STEP_READ_RFID) {
     String tagUID = rfid.readUIDFromTag();
-    if (tagUID != "")
+    bool successfulReading = tagUID != "";
+    if (successfulReading)
       return STEP_LEAVE_ZONE;
     else
       return STEP_READ_RFID;
   }
-  if (curretStep == STEP_LEAVE_ZONE) {
+  if (currentStep == STEP_LEAVE_ZONE) {
     // Just keep rolling back
-    motor.setMovement(-100, 0);
+    motor.setMovement(AUTO_BACKWARDS_SPEED, 0);
     return STEP_LEAVE_ZONE;
   }
 
