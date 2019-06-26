@@ -1,13 +1,12 @@
 #pragma once
 
 class IR {
-
-short int pin;
-bool lastReading;
+  short int pin;
+  bool lastReading;
 
 public:
-    IR(short int pin);
-    bool isBlack();
-    bool isWhite();
-    bool didReadingChange();
+  IR(short int pin);
+  bool isBlack();
+  bool isWhite();
+  bool didReadingChange();
 };
