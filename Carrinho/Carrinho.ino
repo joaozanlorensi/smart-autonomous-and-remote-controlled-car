@@ -100,13 +100,14 @@ void loop() {
     }
   }
   if (mode == MODE_MANUAL) {
-    remoteControl();
+    autonomousState.searchDirection =
+        remoteControl(autonomousState.searchDirection);
   } else if (mode == MODE_AUTONOMOUS) {
     autonomousState = autonomousControl(autonomousState);
   }
 }
 
-void remoteControl() {
+short remoteControl(short currentDirection) {
   String inputString = bluetooth.read();
 
   if (inputString == "u") {
@@ -124,7 +125,13 @@ void remoteControl() {
   } else if (inputString == "0") {
     // Stop
     motor.setMovement(0, 0);
+  } else if (inputString == "k") {
+    return TURNING_RIGHT;
+  } else if (inputString == "j") {
+    return TURNING_LEFT;
   }
+
+  return currentDirection;
 }
 
 /**
