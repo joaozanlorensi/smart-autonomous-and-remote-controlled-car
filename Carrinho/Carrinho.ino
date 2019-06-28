@@ -14,6 +14,7 @@
 #include "Motor.h"
 #include "RFID.h"
 #include "Ultrasonic.h"
+#include "Buzzer.h"
 
 #define LEFT_MOTOR_NUMBER 4
 #define RIGHT_MOTOR_NUMBER 3
@@ -30,6 +31,8 @@
 
 #define RFID_RST_PIN 9
 #define RFID_SS_PIN 10
+
+#define BUZZER_PIN 22 // Joao: *redefine pin
 
 #define MODE_MANUAL 0
 #define MODE_AUTONOMOUS 1
@@ -58,6 +61,8 @@
 #define RFID_BACKWARDS_DURATION 800
 #define RFID_SWIVEL_DURATION 400
 
+#define BUZZER_SONG 0
+
 short mode = MODE_MANUAL;
 
 typedef struct {
@@ -76,6 +81,7 @@ Bluetooth bluetooth(BLUETOOTH_RX, BLUETOOTH_TX);
 IR ir(IR_PIN);
 Ultrasonic ultrasonic(TRIG_PIN, ECHO_PIN);
 RFID rfid(RFID_SS_PIN, RFID_RST_PIN);
+Buzzer buzzer(BUZZER_PIN, BUZZER_SONG);
 
 void setup() {
   Serial.begin(9600);
@@ -92,6 +98,7 @@ void loop() {
   if (ir.didReadingChange()) {
     motor.setMovement(0, 0);
     if (ir.isBlack()) {
+      buzzer.sing(THEME_CHALLENGE); 
       mode = MODE_AUTONOMOUS;
       autonomousState.step = STEP_SEARCH_TARGET;
     } else {
@@ -184,6 +191,7 @@ AutonomousState autonomousControl(AutonomousState state) {
     String tagUID = rfid.readUIDFromTag();
     bool successfulReading = tagUID != "";
     if (successfulReading) {
+      buzzer.sing(THEME_VICTORY); 
       nextStep = STEP_LEAVE_ZONE;
     } else {
       if ((millis() - timeRef) > RFID_READ_TIMEOUT) {
