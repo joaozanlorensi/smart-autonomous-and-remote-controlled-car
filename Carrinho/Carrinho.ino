@@ -18,7 +18,7 @@
 
 #define LEFT_MOTOR_NUMBER 4
 #define RIGHT_MOTOR_NUMBER 3
-#define LEFT_MULTIPLIER 0.9
+#define LEFT_MULTIPLIER 1
 #define RIGHT_MULTIPLIER 1
 
 #define IR_PIN A2
@@ -54,7 +54,7 @@
 
 #define AUTO_SPEED 70
 #define AUTO_BACKWARDS_SPEED -80
-#define AUTO_TURNING_SPEED 70
+#define AUTO_TURNING_SPEED 65
 
 #define FAR_DISTANCE_THRESHOLD 50
 #define CLOSE_DISTANCE_THRESHOLD 5.5
@@ -189,12 +189,12 @@ AutonomousState autonomousControl(AutonomousState state) {
     float distance = ultrasonic.getDistance();
     if (distance < CLOSE_DISTANCE_THRESHOLD) {
       // Found target! Yaaay!!
-      motor.setMovement(0, 0);
+      motor.brake();
       nextStep = STEP_READ_RFID;
       nextTimeRef = millis();
     } else if (distance > FAR_DISTANCE_THRESHOLD) {
       // Lost target :(
-      motor.setMovement(0, 0);
+      motor.brake();
       nextStep = STEP_SEARCH_TARGET;
     } else {
       // On my way!

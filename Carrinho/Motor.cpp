@@ -17,6 +17,7 @@ Motor::Motor(short leftMotorNumber, short rightMotorNumber,
 /**
  * @param speed - short from -100 to 100
  * @param direction -  short from -100 to 100
+ * If passed speed 0 and direction 0, will RELEASE motor, not brake it.
  */
 void Motor::setMovement(short speed, short direction) //
 {
@@ -53,4 +54,17 @@ void Motor::setMovement(short speed, short direction) //
 
   rightMotor.setSpeed(abs(right));
   leftMotor.setSpeed(abs(left));
+}
+
+/**
+ * Will brake the motor making sure it stays in position
+ */
+void Motor::brake() {
+  rightMotor.run(BRAKE);
+  leftMotor.run(BRAKE);
+  rightMotor.setSpeed(0);
+  leftMotor.setSpeed(0);
+
+  currentSpeed = 0;
+  currentDirection = 0;
 }

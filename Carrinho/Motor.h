@@ -14,6 +14,7 @@ public:
   Motor(short leftMotorNumber, short rightMotorNumber, float leftMultiplier,
         float rightMultiplier);
   void setMovement(short speed, short direction);
+  void brake();
   short getCurrentSpeed() { return currentSpeed; }
   short getCurrentDirection() { return currentDirection; };
 };
