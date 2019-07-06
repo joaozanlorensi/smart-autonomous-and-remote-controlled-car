@@ -100,15 +100,11 @@
 #define NOTE_DS8 4978
 
 #define THEME_VICTORY 1
-#define THEME_CHALLENGE 2
 
 class Buzzer {
   short int melodyPin;
-  int song;
   static const int victorySongMelody[];
   static const int victorySongTempo[];
-  static const int challengeSongMelody[];
-  static const int challengeSongTempo[];
 
 public:
   Buzzer(short int melodyPin);
