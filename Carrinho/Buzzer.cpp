@@ -7,26 +7,13 @@ const int Buzzer::victorySongTempo[] = {
     12, 12, 12, 12, 12, 12, 6, 6,
 };
 
-const int Buzzer ::challengeSongMelody[] = {
-    NOTE_D4,
-    NOTE_DS4,
-    NOTE_E4,
-};
-const int Buzzer::challengeSongTempo[] = {
-    6,
-    12,
-    2,
-};
-
-Buzzer::Buzzer(short int outPin, int song) {
-  this->melodyPin = outPin;
-  pinMode(outPin, OUTPUT);
-  this->song = song;
+Buzzer::Buzzer(short int outputPin) {
+  this->melodyPin = outputPin;
+  pinMode(outputPin, OUTPUT);
 }
 
-void Buzzer::sing(int s) {
+void Buzzer::sing(int song) {
   // iterate over the notes of the melody:
-  song = s;
   if (song == THEME_VICTORY) {
     int size = sizeof(victorySongMelody) / sizeof(int);
     for (int thisNote = 0; thisNote < size; thisNote++) {

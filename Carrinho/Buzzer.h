@@ -111,7 +111,7 @@ class Buzzer {
   static const int challengeSongTempo[];
 
 public:
-  Buzzer(short int melodyPin, int song);
-  void sing(int s);
+  Buzzer(short int melodyPin);
+  void sing(int song);
   void buzz(int targetPin, long frequency, long length);
 };

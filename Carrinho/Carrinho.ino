@@ -64,8 +64,6 @@
 #define INITIAL_BURST_DURATION 100
 #define MAX_RETRY_COUNT 5
 
-#define BUZZER_SONG 0
-
 short mode = MODE_MANUAL;
 
 typedef struct {
@@ -85,7 +83,7 @@ Bluetooth bluetooth(BLUETOOTH_RX, BLUETOOTH_TX);
 IR ir(IR_PIN);
 Ultrasonic ultrasonic(TRIG_PIN, ECHO_PIN);
 RFID rfid(RFID_SS_PIN, RFID_RST_PIN);
-Buzzer buzzer(BUZZER_PIN, BUZZER_SONG);
+Buzzer buzzer(BUZZER_PIN);
 
 void setup() {
   Serial.begin(9600);
