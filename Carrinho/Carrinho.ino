@@ -50,7 +50,7 @@
 #define TURNING_LEFT 1
 
 #define MANUAL_SPEED 100
-#define MANUAL_TURNING_SPEED 80
+#define MANUAL_TURNING_SPEED 90
 
 #define AUTO_SPEED 70
 #define AUTO_BACKWARDS_SPEED -80
@@ -120,21 +120,36 @@ void loop() {
 short remoteControl(short currentDirection) {
   String inputString = bluetooth.read();
 
-  if (inputString == "u") {
+  if (inputString == "F") {
     // Go forward
     motor.setMovement(MANUAL_SPEED, 0);
-  } else if (inputString == "d") {
+  } else if (inputString == "B") {
     // Go backwards
     motor.setMovement(-MANUAL_SPEED, 0);
-  } else if (inputString == "l") {
+  } else if (inputString == "L") {
     // Spin left
     motor.setMovement(0, MANUAL_TURNING_SPEED);
-  } else if (inputString == "r") {
+  } else if (inputString == "R") {
     // Spin right
     motor.setMovement(0, -MANUAL_TURNING_SPEED);
-  } else if (inputString == "0") {
+  } else if (inputString == "G") {
+    // Forward and left
+    motor.setMovement(MANUAL_SPEED, MANUAL_TURNING_SPEED);
+  } else if (inputString == "I") {
+    // Forward and right
+    motor.setMovement(MANUAL_SPEED, -MANUAL_TURNING_SPEED);
+  } else if (inputString == "H") {
+    // Backwards and left
+    motor.setMovement(-MANUAL_SPEED, MANUAL_TURNING_SPEED);
+  } else if (inputString == "J") {
+    // Backwards and right
+    motor.setMovement(-MANUAL_SPEED, -MANUAL_TURNING_SPEED);
+  } else if (inputString == "S") {
     // Stop
     motor.setMovement(0, 0);
+  } else if (inputString == "V") {
+    // Honk
+    buzzer.buzz(BUZZER_PIN, 440, 500);
   } else if (inputString == "k") {
     return TURNING_RIGHT;
   } else if (inputString == "j") {
