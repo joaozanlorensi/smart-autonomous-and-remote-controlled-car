@@ -109,5 +109,5 @@ class Buzzer {
 public:
   Buzzer(short int melodyPin);
   void sing(int song);
-  void buzz(int targetPin, long frequency, long length);
+  void buzz(long frequency, long length);
 };

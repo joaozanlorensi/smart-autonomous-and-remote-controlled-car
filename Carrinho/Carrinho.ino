@@ -149,10 +149,14 @@ short remoteControl(short currentDirection) {
     motor.setMovement(0, 0);
   } else if (inputString == "V") {
     // Honk
-    buzzer.buzz(BUZZER_PIN, 440, 500);
-  } else if (inputString == "k") {
+    buzzer.buzz(NOTE_A4, 500);
+  } else if (inputString == "W") {
+    // Search right first
+    buzzer.buzz(NOTE_B5, 150);
     return TURNING_RIGHT;
-  } else if (inputString == "j") {
+  } else if (inputString == "w") {
+    // Search left first
+    buzzer.buzz(NOTE_E6, 150);
     return TURNING_LEFT;
   }
 
