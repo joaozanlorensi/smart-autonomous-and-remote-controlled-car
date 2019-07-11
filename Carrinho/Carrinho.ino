@@ -52,16 +52,17 @@
 #define MANUAL_SPEED 100
 #define MANUAL_TURNING_SPEED 90
 
-#define AUTO_SPEED 70
+#define AUTO_SPEED 65
 #define AUTO_BACKWARDS_SPEED -80
-#define AUTO_TURNING_SPEED 65
+#define AUTO_TURNING_SPEED 60
 
 #define FAR_DISTANCE_THRESHOLD 50
 #define CLOSE_DISTANCE_THRESHOLD 5.5
 #define RFID_READ_TIMEOUT 500
 #define RFID_BACKWARDS_DURATION 600
 #define RFID_SWIVEL_DURATION 400
-#define INITIAL_BURST_DURATION 100
+#define INITIAL_BURST_DURATION 150
+#define GOTO_TARGET_BURST_DURATION 50
 #define MAX_RETRY_COUNT 5
 
 short mode = MODE_MANUAL;
@@ -198,23 +199,29 @@ AutonomousState autonomousControl(AutonomousState state) {
       nextStep = STEP_SEARCH_TARGET;
     } else {
       // Look! Straight ahead!
-      motor.setMovement(0, 0);
+      motor.brake();
       nextStep = STEP_GOTO_TARGET;
+      nextTimeRef = millis();
     }
   }
   if (currentStep == STEP_GOTO_TARGET) {
-    float distance = ultrasonic.getDistance();
-    if (distance < CLOSE_DISTANCE_THRESHOLD) {
-      // Found target! Yaaay!!
-      motor.brake();
-      nextStep = STEP_READ_RFID;
-      nextTimeRef = millis();
-    } else if (distance > FAR_DISTANCE_THRESHOLD) {
-      // Lost target :(
-      motor.brake();
-      nextStep = STEP_SEARCH_TARGET;
+    if (millis() - timeRef > GOTO_TARGET_BURST_DURATION) {
+      float distance = ultrasonic.getDistance();
+      if (distance < CLOSE_DISTANCE_THRESHOLD) {
+        // Found target! Yaaay!!
+        motor.brake();
+        nextStep = STEP_READ_RFID;
+        nextTimeRef = millis();
+      } else if (distance > FAR_DISTANCE_THRESHOLD) {
+        // Lost target :(
+        motor.brake();
+        nextStep = STEP_SEARCH_TARGET;
+      } else {
+        // On my way!
+        motor.setMovement(AUTO_SPEED, 0);
+        nextStep = STEP_GOTO_TARGET;
+      }
     } else {
-      // On my way!
       motor.setMovement(AUTO_SPEED, 0);
       nextStep = STEP_GOTO_TARGET;
     }
