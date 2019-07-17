@@ -25,3 +25,6 @@ alt="Robot Car Video" width="320" height="180" border="5" /></a>
 -   Motor Shield
 -   Terminal Block Shield
 -   Buzzer
+-   LED
+-   Power bank
+-   RFID Tags
