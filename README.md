@@ -10,7 +10,7 @@ controlled while in a "white area" (free control area) and autonomous while in a
 In the autonomous area, the robot car should look for a RFID device and read it. After that, the robot is then able to go back to being remotely controlled.
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=zCywNJ8AhtY
-" target="_blank"><img src="https://i9.ytimg.com/vi/zCywNJ8AhtY/maxresdefault.jpg?sqp=CKjFuekF&rs=AOn4CLAwVsO_qgSznXdH8FqoipIJH__4BQ" 
+" target="_blank"><img src="https://img.youtube.com/vi/zCywNJ8AhtY/0.jpg" 
 alt="Robot Car Video" width="320" height="180" border="5" /></a>
 
 ## Components
