@@ -1,4 +1,4 @@
-# projeto-carrinho-inteligente
+# smart-autonomous-and-remote-controlled-car
 
 A project of the Sensors and Actuators class of Electronics Engineering at the Federal University of Technology - Paraná (UTFPR).
 
